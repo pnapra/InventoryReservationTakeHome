@@ -2,7 +2,7 @@ namespace InventoryReservation;
 
 internal sealed class SkuInventoryState
 {
-    private readonly Dictionary<string, int> reservationsByOrderId = new(StringComparer.Ordinal);
+    private readonly Dictionary<string, int> _reservationsByOrderId = new(StringComparer.Ordinal);
 
     public int OnHand { get; private set; }
 
@@ -25,7 +25,7 @@ internal sealed class SkuInventoryState
     public void Reserve(string orderId, int quantity)
     {
         Reserved += quantity;
-        reservationsByOrderId[orderId] = GetReservedForOrder(orderId) + quantity;
+        _reservationsByOrderId[orderId] = GetReservedForOrder(orderId) + quantity;
     }
 
     public bool HasReservation(string orderId, int quantity)
@@ -49,21 +49,21 @@ internal sealed class SkuInventoryState
 
     private int GetReservedForOrder(string orderId)
     {
-        return reservationsByOrderId.TryGetValue(orderId, out var quantity)
+        return _reservationsByOrderId.TryGetValue(orderId, out var quantity)
             ? quantity
             : 0;
     }
 
     private void DecreaseReservation(string orderId, int quantity)
     {
-        var remaining = reservationsByOrderId[orderId] - quantity;
+        var remaining = _reservationsByOrderId[orderId] - quantity;
 
         if (remaining == 0)
         {
-            reservationsByOrderId.Remove(orderId);
+            _reservationsByOrderId.Remove(orderId);
             return;
         }
 
-        reservationsByOrderId[orderId] = remaining;
+        _reservationsByOrderId[orderId] = remaining;
     }
 }

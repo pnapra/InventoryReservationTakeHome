@@ -254,6 +254,20 @@ public sealed class InventoryReservationEngineTests
     }
 
     [Fact]
+    public void Process_RepeatedReservationsForSameOrderAndSku_AreAccumulated()
+    {
+        var result = Process(
+            AddStock("c1", "P1", 10),
+            Reserve("c2", "P1", "O1", 3),
+            Reserve("c3", "P1", "O1", 2),
+            Release("c4", "P1", "O1", 4),
+            Ship("c5", "P1", "O1", 1));
+
+        AssertSummary(SingleSummary(result), "P1", onHand: 9, reserved: 0, available: 9, shipped: 1);
+        Assert.Empty(result.FailedCommands);
+    }
+
+    [Fact]
     public void Process_SameOrderReservesMultipleSkusIndependently()
     {
         var result = Process(
