@@ -44,6 +44,15 @@ public sealed class InventoryReservationEngineTests
     }
 
     [Fact]
+    public void Process_ReserveExactlyAvailableInventory_Succeeds()
+    {
+        var result = Process(AddStock("c1", "P1", 10), Reserve("c2", "P1", "O1", 10));
+
+        AssertSummary(SingleSummary(result), "P1", onHand: 10, reserved: 10, available: 0, shipped: 0);
+        Assert.Empty(result.FailedCommands);
+    }
+
+    [Fact]
     public void Process_ReserveMoreThanAvailableInventory_Fails()
     {
         var result = Process(AddStock("c1", "P1", 5), Reserve("c2", "P1", "O1", 6));
